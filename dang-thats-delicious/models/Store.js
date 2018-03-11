@@ -36,14 +36,22 @@ const storeSchema = new mongoose.Schema({
   photo: String,
 })
 
-storeSchema.pre('save', function(next) {
+storeSchema.pre('save', async function(next) {
   if (!this.isModified('name')) {
     return next() // skip
   }
   this.slug = slug(this.name)
-  next()
+  // Find stores that have a slug of wes, wes-1, wes-2
+  // case insensitive
+  const slugRegEx = new RegExp(`^(${this.slug})((-[0-9]*$)?)$`, 'i')
 
-  // TODO ensure unique slugs
+  const storesWithSlug = await this.constructor.find({ slug: slugRegEx })
+
+  if(storesWithSlug.length) {
+    this.slug = `${this.slug}-${storesWithSlug.length + 1}`
+  }
+
+  next()
 })
 
 module.exports = mongoose.model('Store', storeSchema)
