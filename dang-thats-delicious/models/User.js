@@ -22,6 +22,16 @@ const userSchema = new Schema({
   }
 })
 
+// A virtual field is a field whose info can be generated on the fly, and does
+// not need to be stored in the db.
+// e.g. if you have a user's weight in pounds, you can generate their weight in
+// kgs on the fly in a virtual field, without having to also store their weight
+// in kgs in the db.
+userSchema.virtual('gravatar').get(function() {
+  const hash = md5(this.email)
+  return `https://gravatar.com/avatar/${hash}?s=200`
+})
+
 userSchema.plugin(passportLocalMongoose, { usernameField: 'email' })
 userSchema.plugin(mongodbErrorHandler)
 
