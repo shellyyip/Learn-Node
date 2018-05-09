@@ -19,7 +19,9 @@ const userSchema = new Schema({
     type: String,
     required: 'Plese supply a name',
     trim: true,
-  }
+  },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 })
 
 // A virtual field is a field whose info can be generated on the fly, and does
